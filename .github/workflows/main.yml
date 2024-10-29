@@ -26,7 +26,7 @@ jobs:
 
   android-build:
     needs: dependency-setup
-    runs-on: ubuntu-latest
+    runs-on: c
     steps:
       - uses: actions/checkout@v1
       - name: Restore cache for Flutter dependencies
@@ -54,7 +54,7 @@ jobs:
 
   ios-build:
     needs: dependency-setup
-    runs-on: macos-latest  # Switch to macOS for iOS build
+    runs-on: ubuntu-latest  # Switch to macOS for iOS build
     steps:
       - uses: actions/checkout@v1
       - name: Restore cache for Flutter dependencies
