@@ -7,34 +7,34 @@ on:
     branches: ["main"]
 
 jobs:
-  dependency-setup:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2  # Use v2 for the checkout action
-      - uses: actions/cache@v3  # Add cache for Flutter dependencies
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-flutter-
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: 'stable'
-      - name: Install dependencies
-        run: flutter pub get
-      - name: List files
-        run: ls -R  # This can be helpful for debugging
+  # dependency-setup:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2  # Use v2 for the checkout action
+  #     - uses: actions/cache@v3  # Add cache for Flutter dependencies
+  #       with:
+  #         path: ~/.pub-cache
+  #         key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-flutter-
+  #     - uses: subosito/flutter-action@v1
+  #       with:
+  #         channel: 'stable'
+  #     - name: Install dependencies
+  #       run: flutter pub get
+  #     - name: List files
+  #       run: ls -R  # This can be helpful for debugging
 
   android-build:
-    needs: dependency-setup
+    # needs: dependency-setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Restore cache for Flutter dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
+      # - name: Restore cache for Flutter dependencies
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ~/.pub-cache
+      #     key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
@@ -54,15 +54,15 @@ jobs:
           path: build/app/outputs/bundle/release/app-release.aab
 
   ios-build:
-    needs: dependency-setup
+    # needs: dependency-setup
     runs-on: macos-latest  # Switch to macOS for iOS build
     steps:
       - uses: actions/checkout@v2
-      - name: Restore cache for Flutter dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
+      # - name: Restore cache for Flutter dependencies
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ~/.pub-cache
+      #     key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
@@ -73,6 +73,8 @@ jobs:
         with:
           name: ios-app
           path: build/ios/iphoneos/Runner.app
+      - name: ls
+        run: ls -R
 
   push-android-build-to-s3:
     needs: android-build
@@ -88,6 +90,8 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_S3 }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY_S3 }}
           aws-region: ${{ vars.AWS_REGION }}
+      - name: ls
+        run: ls -R
       - name: Upload artifacts to AWS S3
         uses: usualdesigner/s3-artifact-upload@main
         with:
@@ -102,6 +106,8 @@ jobs:
         with:
           name: ios-app
           path: ./  # Ensure this is a directory where the artifact can be downloaded
+      - name: ls
+        run: ls -R
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
