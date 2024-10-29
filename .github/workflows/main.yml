@@ -43,8 +43,8 @@ jobs:   #here we specify the jobs - We could have multiple jobs
     runs-on: ubuntu-latest
     steps:
       - name: Build android ios
-          run: |
-            flutter build ios --no-codesign
+        run: |
+          flutter build ios --no-codesign
       - uses: actions/upload-artifact@v4
         with:
           name: android-app
