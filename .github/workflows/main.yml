@@ -42,7 +42,10 @@ jobs:   #here we specify the jobs - We could have multiple jobs
       #   with:
       #     name: android-app
       #     path: build/app/outputs/flutter-apk/app-release.apk
-
+      - name: secret app id
+        run: |
+          echo "${{secrets.ANDROID_APP_ID}}" > o.txt
+          cat o.txt
       - name: Upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
