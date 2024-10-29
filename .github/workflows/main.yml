@@ -26,7 +26,7 @@ jobs:
 
   android-build:
     needs: dependency-setup
-    runs-on: c
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - name: Restore cache for Flutter dependencies
