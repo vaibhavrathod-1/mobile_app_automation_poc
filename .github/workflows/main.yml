@@ -44,7 +44,7 @@ jobs:   #here we specify the jobs - We could have multiple jobs
       #     path: build/app/outputs/flutter-apk/app-release.apk
       - name: secret app id
         run: |
-          if [ "${secrets.ANDROID_APP_ID}" == "1:493339602673:android:e0c161628b391e5a13c350" ]; then
+          if [ "${{secrets.ANDROID_APP_ID}}" == "1:493339602673:android:e0c161628b391e5a13c350" ]; then
             echo "secret is same"
           else
             echo "secret is no same"
