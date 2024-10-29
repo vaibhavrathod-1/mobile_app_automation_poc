@@ -92,7 +92,7 @@ jobs:
         uses: usualdesigner/s3-artifact-upload@main
         with:
           bucket-name: ${{ vars.BUCKET_NAME }}
-          file: android-app/app-release.aab  # Adjust path to the downloaded artifact
+          file: app-release.aab  # Adjust path to the downloaded artifact
 
   push-ios-build-to-s3:
     needs: ios-build
@@ -112,7 +112,7 @@ jobs:
         uses: usualdesigner/s3-artifact-upload@main
         with:
           bucket-name: ${{ vars.BUCKET_NAME }}
-          file: ios-app/Runner.app  # Adjust path to the downloaded artifact
+          file: Runner.app  # Adjust path to the downloaded artifact
 
       # - name: Upload artifact to Firebase App Distribution
       #   uses: wzieba/Firebase-Distribution-Github-Action@v1
