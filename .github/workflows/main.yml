@@ -58,25 +58,32 @@ jobs:
     runs-on: macos-latest  # Switch to macOS for iOS build
     steps:
       - uses: actions/checkout@v2
-      # - name: Restore cache for Flutter dependencies
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ~/.pub-cache
-      #     key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
       - name: Build iOS
         run: |
-          flutter upgrade
-          flutter build ios --release --no-codesign --export-options-plist ios/ExportOptions.plist
+          flutter build ios --release --no-codesign
+      - name: Create Payload folder and .ipa
+        run: |
+          # Create Payload folder
+          mkdir -p Payload
 
+          # Copy Runner.app to Payload folder
+          cp -R build/ios/iphoneos/Runner.app Payload/
+
+          # Compress the Payload folder to Payload.zip
+          zip -r Payload.zip Payload
+
+          # Rename Payload.zip to Payload.ipa
+          mv Payload.zip Payload.ipa
       - uses: actions/upload-artifact@v4
         with:
           name: ios-app
-          path: build/ios/iphoneos/Runner.ipa
-      - name: ls
+          path: Payload/Payload.ipa  # Change path to the newly created .ipa
+      - name: List files
         run: ls -R
+      
 
   push-android-build-to-s3:
     needs: android-build
@@ -108,7 +115,7 @@ jobs:
         with:
           name: ios-app
           path: ./  # Ensure this is a directory where the artifact can be downloaded
-      - name: ls
+      - name: List files
         run: ls -R
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -116,11 +123,11 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_S3 }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY_S3 }}
           aws-region: ${{ vars.AWS_REGION }}
-      - name: Upload artifacts to AWS S3
+      - name: Upload .ipa file to AWS S3
         uses: usualdesigner/s3-artifact-upload@main
         with:
           bucket-name: ${{ vars.BUCKET_NAME }}
-          file: Runner.app  # Adjust path to the downloaded artifact
+          file: Payload/Payload.ipa   # Adjust path to the downloaded artifact
 
       # - name: Upload artifact to Firebase App Distribution
       #   uses: wzieba/Firebase-Distribution-Github-Action@v1
