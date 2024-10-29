@@ -1,38 +1,48 @@
 name: Flutter
 
-on:  #events (push and pull_request)
-  push: 
-    branches: [ "main" ]
+on:
+  push:
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
-
-jobs:   #here we specify the jobs - We could have multiple jobs
-  dependency-setup:  #name it something meaningful 
-    runs-on: ubuntu-latest  #runner: select a machine to use
+jobs:
+  dependency-setup:
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v1
+      - uses: actions/cache@v3  # Add cache for Flutter dependencies
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
       - name: Install dependencies
-        run: flutter pub get # action
+        run: flutter pub get
 
   android-build:
     needs: dependency-setup
-    runs-on: ubuntu-latest  #runner: select a machine to use
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: Set up JDK 21 
+      - name: Restore cache for Flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: 'stable'
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'oracle'
         continue-on-error: true
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: 'stable'
       - name: Build android apk and appBundle
         run: |
           flutter build appbundle --release
@@ -41,22 +51,28 @@ jobs:   #here we specify the jobs - We could have multiple jobs
         with:
           name: android-app
           path: build/app/outputs/flutter-apk/app-release.apk
-  
+
   ios-build:
     needs: dependency-setup
-    runs-on: ubuntu-latest
+    runs-on: macos-latest  # Switch to macOS for iOS build
     steps:
       - uses: actions/checkout@v1
+      - name: Restore cache for Flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
-      - name: Build android ios
+      - name: Build ios
         run: |
-          flutter build ios --no-codesign
+          flutter build ios --release --no-codesign
       - uses: actions/upload-artifact@v4
         with:
-          name: android-app
+          name: ios-app
           path: build/ios/iphoneos/Runner.ipa
+
       # - name: Upload artifact to Firebase App Distribution
       #   uses: wzieba/Firebase-Distribution-Github-Action@v1
       #   with:
