@@ -80,7 +80,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: ios-app
-          path: Payload/Payload.ipa  # Change path to the newly created .ipa
+          path: ./Payload.ipa  # Change path to the newly created .ipa
       - name: List files
         run: ls -R
       
@@ -127,7 +127,7 @@ jobs:
         uses: usualdesigner/s3-artifact-upload@main
         with:
           bucket-name: ${{ vars.BUCKET_NAME }}
-          file: Payload/Payload.ipa   # Adjust path to the downloaded artifact
+          file: Payload.ipa   # Adjust path to the downloaded artifact
 
       # - name: Upload artifact to Firebase App Distribution
       #   uses: wzieba/Firebase-Distribution-Github-Action@v1
