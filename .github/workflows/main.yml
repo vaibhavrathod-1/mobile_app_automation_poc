@@ -13,9 +13,12 @@ jobs:   #here we specify the jobs - We could have multiple jobs
 
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-java@v1
+      - name: Set up JDK 21 
+        uses: actions/setup-java@v4
         with:
-          java-version: '12.x'
+          java-version: '21'
+          distribution: 'oracle'
+        continue-on-error: true
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
