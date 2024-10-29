@@ -76,7 +76,7 @@ jobs:
           path: build/ios/iphoneos/Runner.ipa
   push-android-build-to-s3:
     needs: android-build
-    runs-on: ubuntu  # Switch to macOS for iOS build
+    runs-on: ubuntu-latest  # Switch to macOS for iOS build
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -95,7 +95,7 @@ jobs:
           file: app-release.apk
   push-ios-build-to-s3:
     needs: ios-build
-    runs-on: ubuntu  # Switch to macOS for iOS build
+    runs-on: ubuntu-latest  # Switch to macOS for iOS build
     steps:
       - uses: actions/download-artifact@v4
         with:
