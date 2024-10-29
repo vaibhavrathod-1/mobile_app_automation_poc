@@ -7,34 +7,34 @@ on:
     branches: ["main"]
 
 jobs:
-  # dependency-setup:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2  # Use v2 for the checkout action
-  #     - uses: actions/cache@v3  # Add cache for Flutter dependencies
-  #       with:
-  #         path: ~/.pub-cache
-  #         key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-flutter-
-  #     - uses: subosito/flutter-action@v1
-  #       with:
-  #         channel: 'stable'
-  #     - name: Install dependencies
-  #       run: flutter pub get
-  #     - name: List files
-  #       run: ls -R  # This can be helpful for debugging
+  dependency-setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2  # Use v2 for the checkout action
+      - uses: actions/cache@v3  # Add cache for Flutter dependencies
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: 'stable'
+      - name: Install dependencies
+        run: flutter pub get
+      - name: List files
+        run: ls -R  # This can be helpful for debugging
 
   android-build:
-    # needs: dependency-setup
+    needs: dependency-setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      # - name: Restore cache for Flutter dependencies
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ~/.pub-cache
-      #     key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
+      - name: Restore cache for Flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
@@ -54,10 +54,15 @@ jobs:
           path: build/app/outputs/bundle/release/app-release.aab
 
   ios-build:
-    # needs: dependency-setup
+    needs: dependency-setup
     runs-on: macos-latest  # Switch to macOS for iOS build
     steps:
       - uses: actions/checkout@v2
+      - name: Restore cache for Flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
