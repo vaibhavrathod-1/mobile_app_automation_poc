@@ -9,9 +9,8 @@ on:
 jobs:
   dependency-setup:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2  # Use v2 for the checkout action
       - uses: actions/cache@v3  # Add cache for Flutter dependencies
         with:
           path: ~/.pub-cache
@@ -23,14 +22,14 @@ jobs:
           channel: 'stable'
       - name: Install dependencies
         run: flutter pub get
-      - name: list 
-        run: ls -R
+      - name: List files
+        run: ls -R  # This can be helpful for debugging
 
   android-build:
     needs: dependency-setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Restore cache for Flutter dependencies
         uses: actions/cache@v3
         with:
@@ -45,7 +44,7 @@ jobs:
           java-version: '21'
           distribution: 'oracle'
         continue-on-error: true
-      - name: Build android apk and appBundle
+      - name: Build Android APK and AppBundle
         run: |
           flutter build appbundle --release
           ls -R
@@ -58,7 +57,7 @@ jobs:
     needs: dependency-setup
     runs-on: macos-latest  # Switch to macOS for iOS build
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Restore cache for Flutter dependencies
         uses: actions/cache@v3
         with:
@@ -67,51 +66,54 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
-      - name: Build ios
+      - name: Build iOS
         run: |
           flutter build ios --release --no-codesign
       - uses: actions/upload-artifact@v4
         with:
           name: ios-app
-          path: build/ios/iphoneos/Runner.ipa
+          path: build/ios/iphoneos/Runner.app
+
   push-android-build-to-s3:
     needs: android-build
-    runs-on: ubuntu-latest  # Switch to macOS for iOS build
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
         with:
           name: android-app
-          path: app-release.apk
+          path: ./  # Ensure this is a directory where the artifact can be downloaded
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_S3}}
-          aws-secret-access-key: ${{secrets.AWS_SECRET_KEY_S3}}
-          aws-region: ${{vars.AWS_REGION}}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_S3 }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY_S3 }}
+          aws-region: ${{ vars.AWS_REGION }}
       - name: Upload artifacts to AWS S3
         uses: usualdesigner/s3-artifact-upload@main
         with:
-          bucket-name: ${{vars.BUCKET_NAME}}
-          file: app-release.apk
+          bucket-name: ${{ vars.BUCKET_NAME }}
+          file: android-app/app-release.aab  # Adjust path to the downloaded artifact
+
   push-ios-build-to-s3:
     needs: ios-build
-    runs-on: ubuntu-latest  # Switch to macOS for iOS build
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
         with:
           name: ios-app
-          path: Runner.ipa
+          path: ./  # Ensure this is a directory where the artifact can be downloaded
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_S3}}
-          aws-secret-access-key: ${{secrets.AWS_SECRET_KEY_S3}}
-          aws-region: ${{vars.AWS_REGION}}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_S3 }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY_S3 }}
+          aws-region: ${{ vars.AWS_REGION }}
       - name: Upload artifacts to AWS S3
         uses: usualdesigner/s3-artifact-upload@main
         with:
-          bucket-name: ${{vars.BUCKET_NAME}}
-          file: Runner.app
+          bucket-name: ${{ vars.BUCKET_NAME }}
+          file: ios-app/Runner.app  # Adjust path to the downloaded artifact
+
       # - name: Upload artifact to Firebase App Distribution
       #   uses: wzieba/Firebase-Distribution-Github-Action@v1
       #   with:
