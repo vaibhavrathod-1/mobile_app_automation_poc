@@ -32,12 +32,12 @@ jobs:   #here we specify the jobs - We could have multiple jobs
       - name: Build android apk and appBundle
         run: |
           flutter build apk
-          ls
+          ls -R
 
       - name: Build android ios
         run: |
           flutter build ios --release --no-codesign
-          ls
+          ls -R
 
       - name: Upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
