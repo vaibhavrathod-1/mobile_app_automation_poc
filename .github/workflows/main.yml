@@ -23,6 +23,8 @@ jobs:
           channel: 'stable'
       - name: Install dependencies
         run: flutter pub get
+      - name: list 
+        run: ls -R
 
   android-build:
     needs: dependency-setup
