@@ -21,7 +21,9 @@ jobs:
         with:
           channel: 'stable'
       - name: Install dependencies
-        run: flutter pub get
+        run: |
+          flutter --version
+          flutter pub get
       - name: List files
         run: ls -R  # This can be helpful for debugging
 
