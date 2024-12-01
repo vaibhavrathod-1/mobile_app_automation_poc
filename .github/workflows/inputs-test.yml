@@ -5,14 +5,28 @@ on:
     inputs:
       name:
         type: choice
-        description: Who to greet
+        description: MOBILE BUILD TYPE
         options: 
-        - monalisa
-        - cschleiden
-      message:
-        required: true
-      use-emoji:
-        type: boolean
-        description: Include 🎉🤣 emojis
-      environment:
-        type: environment
+        - android
+        - ios
+        - both
+      flavour:
+        type: choice
+        options:
+        - dev
+        - cug
+        - prod
+      
+      BUILD_TYPE:
+        type: choice
+        description: BUILD MODE
+        options:
+        - debug
+        - profile
+        - release
+
+      # use-emoji:
+      #   type: boolean
+      #   description: Include 🎉🤣 emojis
+      # environment:
+      #   type: environment
