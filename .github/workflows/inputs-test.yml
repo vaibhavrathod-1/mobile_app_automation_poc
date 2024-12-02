@@ -30,7 +30,14 @@ on:
         type: string
         description: "Release Description"
         required: true
-          
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: list
+        run: ls
+         
 
       # use-emoji:
       #   type: boolean
