@@ -1,7 +1,7 @@
 name: Flutter-mobile-app
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
 
 jobs:
   dependency-setup:
