@@ -6,24 +6,31 @@ on:
       name:
         type: choice
         description: MOBILE BUILD TYPE
+        default: 'both'
         options: 
         - android
         - ios
         - both
       flavour:
+        required: true
         type: choice
         options:
         - dev
         - cug
-        - prod
-      
+        - prod    
       BUILD_TYPE:
         type: choice
         description: BUILD MODE
+        required: true
         options:
         - debug
         - profile
         - release
+      CHANGE_LOG:
+        type: string
+        description: "Release Description"
+        required: true
+          
 
       # use-emoji:
       #   type: boolean
