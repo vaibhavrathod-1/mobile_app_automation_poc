@@ -72,7 +72,7 @@ jobs:
           channel: 'stable'
       - name: Build iOS
         run: |
-          flutter build ios --release --no-codesign
+          flutter build ios --release --no-codesign --build-name=0.2.2 --build-number=47
       - name: Create Payload folder and .ipa
         run: |
           # Create Payload folder
